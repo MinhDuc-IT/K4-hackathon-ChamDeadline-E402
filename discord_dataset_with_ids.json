@@ -1,0 +1,221 @@
+{
+  "metadata": {
+    "dataset_id": "discord_sample_001",
+    "source": "Discord conversation pasted by user",
+    "language": "vi",
+    "timezone": "Asia/Bangkok",
+    "created_at": "2026-07-30T15:55:00+07:00",
+    "schema_version": "1.0"
+  },
+  "threads": [
+    {
+      "thread_id": "thread_001",
+      "title": "Phát triển dự án của các khóa trước lên nếu thấy hay và cùng chủ đề?",
+      "category": "project_idea",
+      "messages": [
+        {
+          "message_id": "msg_001",
+          "author": {
+            "display_name": "Bùi Hoàng Vương",
+            "user_label": "G21 - T100",
+            "role": "OP"
+          },
+          "timestamp_raw": "7/26/2026 5:14 PM",
+          "timestamp": "2026-07-26T17:14:00+07:00",
+          "content": "Mọi người cho em hỏi là nếu mình thấy các khóa trước đã có 1 dự án cùng chủ đề mà tụi em thấy có thể mở rộng & hoàn thiện nó hơn theo cái painpoint của khách hàng mà tụi em xác định được á. Tụi em có thể liên hệ nhà trường, anh chị mentor và các anh chị đã làm dự án đấy để thuyết phục các anh chị cho tụi em mở rộng & phát triển nó hơn được không ạ?",
+          "links": []
+        },
+        {
+          "message_id": "msg_002",
+          "author": {
+            "display_name": "Hiếu Nguyễn",
+            "user_label": "G3-T098-01620",
+            "role": "member"
+          },
+          "timestamp_raw": "7/26/2026 5:22 PM",
+          "timestamp": "2026-07-26T17:22:00+07:00",
+          "content": "Khả năng thuyết phục được vẫn là yếu tố then chốt, Bạn hoàn toàn có thể nêu vấn đề ở Ticket.\nMọi thứ đều có thể, chỉ có điều bạn có dám tạo Ticket và thuyết phục được BTC không thôi.\n\nCòn đừng chỉ dừng lại ở hỏi, hãy action luôn",
+          "links": []
+        },
+        {
+          "message_id": "msg_003",
+          "author": {
+            "display_name": "Bùi Hoàng Vương",
+            "user_label": "G21 - T100",
+            "role": "OP"
+          },
+          "timestamp_raw": "7/26/2026 5:24 PM",
+          "timestamp": "2026-07-26T17:24:00+07:00",
+          "content": "Okie, thanks cậu nhiều! Nhóm tớ sẽ cố gắng!",
+          "links": []
+        },
+        {
+          "message_id": "msg_004",
+          "author": {
+            "display_name": "Khang",
+            "user_label": "T213-01101",
+            "role": "member"
+          },
+          "timestamp_raw": "7/26/2026 5:27 PM",
+          "timestamp": "2026-07-26T17:27:00+07:00",
+          "content": "Thực ra có thể suggest chủ đề cũng được, nhưng thuyết phục thì là vấn đề đặc biệt là đã có sản phẩm trước đó, nên bạn phải thuyết phục trình bày những cái gì thật mới hoặc cải thiện đúng cái pain point hay khuyết điểm nhóm trước đã bỏ sót trong lúc suggest thì may ra mới được. Với lại mình nghĩ điểm có thể sẽ không được cao so với chủ đề mới đâu do có các cái tính năng cơ bản mà nhóm khóa trước đã làm rồi",
+          "links": []
+        }
+      ]
+    },
+    {
+      "thread_id": "thread_002",
+      "title": "Hỗ trợ chatbot",
+      "category": "chatbot_support",
+      "messages": [
+        {
+          "message_id": "msg_005",
+          "author": {
+            "display_name": "HoangHTB",
+            "user_label": "Lab Coach",
+            "role": "OP"
+          },
+          "timestamp_raw": "12:52 PM",
+          "timestamp": "2026-07-30T12:52:00+07:00",
+          "timestamp_inferred": true,
+          "content": "Scope: chatbot discord, chatbot hỗ trợ toàn chương trình, không focus only vào discord,\nCác feedback, idea về chatbot các bạn nhắn vào đây",
+          "links": []
+        },
+        {
+          "message_id": "msg_006",
+          "author": {
+            "display_name": "Nguyễn Tuấn Vũ",
+            "user_label": "T096-01845",
+            "role": "member"
+          },
+          "timestamp_raw": "3:01 PM",
+          "timestamp": "2026-07-30T15:01:00+07:00",
+          "timestamp_inferred": true,
+          "content": "a ơi, e có thể xin data về khóa học mà Bot Kute biết ddc ko ạ",
+          "links": []
+        }
+      ]
+    },
+    {
+      "thread_id": "thread_003",
+      "title": "Mọi người tung các link lấy dataset mà mọi người biết lên đây để anh chị em cùng tham khảo đi?",
+      "category": "dataset_resources",
+      "messages": [
+        {
+          "message_id": "msg_007",
+          "author": {
+            "display_name": "Bùi Hoàng Vương",
+            "user_label": "G21 - T100",
+            "role": "OP"
+          },
+          "timestamp_raw": "7/27/2026 7:30 AM",
+          "timestamp": "2026-07-27T07:30:00+07:00",
+          "content": "Mọi người tung các link lấy dataset mà mọi người biết lên đây để anh chị em cùng tham khảo đi?",
+          "links": []
+        },
+        {
+          "message_id": "msg_008",
+          "author": {
+            "display_name": "Nguyễn Quang Huy",
+            "user_label": "G13-T015-01873",
+            "role": "member",
+            "tags": [
+              "OAI"
+            ]
+          },
+          "timestamp_raw": "7/27/2026 7:31 AM",
+          "timestamp": "2026-07-27T07:31:00+07:00",
+          "content": "https://datasetsearch.research.google.com/",
+          "links": [
+            {
+              "url": "https://datasetsearch.research.google.com/",
+              "title": "Google Dataset Search",
+              "resource_type": "dataset_search_engine"
+            }
+          ]
+        },
+        {
+          "message_id": "msg_009",
+          "author": {
+            "display_name": "Bùi Hoàng Vương",
+            "user_label": "G21 - T100",
+            "role": "OP"
+          },
+          "timestamp_raw": "7/27/2026 7:32 AM",
+          "timestamp": "2026-07-27T07:32:00+07:00",
+          "content": "Tuyệt vời cậu ơi",
+          "links": []
+        },
+        {
+          "message_id": "msg_010",
+          "author": {
+            "display_name": "Nguyễn Văn Phong",
+            "user_label": "T004-01241",
+            "role": "member"
+          },
+          "timestamp_raw": "7/27/2026 9:18 AM",
+          "timestamp": "2026-07-27T09:18:00+07:00",
+          "content": "https://github.com/awesomedata/awesome-public-datasets\nA topic-centric list of HQ open datasets.",
+          "links": [
+            {
+              "url": "https://github.com/awesomedata/awesome-public-datasets",
+              "title": "Awesome Public Datasets",
+              "resource_type": "github_repository"
+            }
+          ]
+        },
+        {
+          "message_id": "msg_011",
+          "author": {
+            "display_name": "Nguyễn Tuấn Nam",
+            "user_label": "T190-02039",
+            "role": "member"
+          },
+          "timestamp_raw": "Yesterday at 3:13 PM",
+          "timestamp": "2026-07-29T15:13:00+07:00",
+          "timestamp_inferred": true,
+          "content": "https://www.kaggle.com/\nKaggle: The World’s AI Proving Ground\nDiscover what actually works in AI. Join millions of builders, researchers, and labs evaluating agents, models, and frontier technology through crowdsourced benchmarks, competitions, and hackathons.",
+          "links": [
+            {
+              "url": "https://www.kaggle.com/",
+              "title": "Kaggle",
+              "resource_type": "dataset_platform"
+            }
+          ]
+        },
+        {
+          "message_id": "msg_012",
+          "author": {
+            "display_name": "Chu Thị Yến Khanh",
+            "user_label": "T047-01739",
+            "role": "member"
+          },
+          "timestamp_raw": "Yesterday at 3:30 PM",
+          "timestamp": "2026-07-29T15:30:00+07:00",
+          "timestamp_inferred": true,
+          "content": "https://huggingface.co/datasets\nDatasets – Hugging Face\nExplore datasets powering machine learning.",
+          "links": [
+            {
+              "url": "https://huggingface.co/datasets",
+              "title": "Hugging Face Datasets",
+              "resource_type": "dataset_platform"
+            }
+          ]
+        },
+        {
+          "message_id": "msg_013",
+          "author": {
+            "display_name": "Trương Đình Khoa",
+            "user_label": "T137-01297",
+            "role": "member"
+          },
+          "timestamp_raw": "12:12 AM",
+          "timestamp": "2026-07-30T00:12:00+07:00",
+          "timestamp_inferred": true,
+          "content": "Cứ Kaggle và HuggingFace mà bem thôi bạn. Nếu cả 2 cái này không có thì bạn cứ chat cho AI research. Ưu tiên grok, perlexity vì mình dùng và thấy nó update realtime hơn nhanh hơn các con khác",
+          "links": []
+        }
+      ]
+    }
+  ]
+}
