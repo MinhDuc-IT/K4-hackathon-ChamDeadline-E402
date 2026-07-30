@@ -27,7 +27,7 @@ def generate_answer(question: str, context_chunks: List[str]) -> str:
     """
     # Nếu không có ngữ cảnh nào, trả về câu trả lời mặc định
     if not context_chunks:
-        return "Tôi không tìm thấy thông tin này trong cơ sở tri thức của Server."
+        return "Câu này hơi ngoài hiểu biết của mình, để không trả lời sai thì mình tag AD vào giúp bạn nha!"
         
     context_text = "\n\n---\n\n".join(context_chunks)
     user_prompt = RAG_PROMPT_TEMPLATE.format(context=context_text, question=question)
