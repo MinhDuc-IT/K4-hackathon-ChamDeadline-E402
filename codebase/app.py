@@ -244,6 +244,7 @@ async def on_ready() -> None:
     guild_id = os.getenv("DISCORD_GUILD_ID")
     if guild_id:
         guild = discord.Object(id=int(guild_id))
+        tree.copy_global_to(guild=guild)
         synced = await tree.sync(guild=guild)
         print(f"Synced {len(synced)} guild commands to {guild_id}")
     else:
