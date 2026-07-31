@@ -360,7 +360,6 @@ async def run() -> Path:
     import app as bot_app
 
     bot_app.llm_client = bot_app.LLMClient()
-    bot_app.embedding_model.load()
     loaded = bot_app.history_store.load_cache()
     if not loaded or not bot_app.history_store.items:
         raise RuntimeError(
