@@ -20,7 +20,7 @@ Bạn cần tạo một file tên là `.env` ở thư mục gốc (nằm cùng c
 - `OPENAI_API_KEY`: API Key của mô hình ngôn ngữ (Lấy từ OpenRouter, OpenAI, hoặc nền tảng tương tự).
 - `OPENAI_BASE_URL`: Link API của nền tảng (Ví dụ OpenRouter là `https://openrouter.ai/api/v1`).
 - `OPENAI_MODEL`: Tên mô hình dùng để trả lời (Ví dụ: `gpt-4o-mini`).
-- `EMBEDDING_MODEL`: Mô hình nhúng vector (Ví dụ: `text-embedding-3-small`).
+- `EMBEDDING_MODEL`: Tên mô hình nhúng vector (Ví dụ mặc định: `intfloat/multilingual-e5-large` để chạy cục bộ).
 
 ## 4. Cách khởi chạy Bot
 Từ nay, bạn **chỉ cần dùng một lệnh duy nhất** để khởi động toàn bộ hệ thống:

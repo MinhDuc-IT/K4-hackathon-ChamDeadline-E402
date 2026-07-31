@@ -9,7 +9,7 @@ Mọi mã nguồn chính của hệ thống được đặt trong thư mục `sr
 - `src/ingest.py`: Đọc file JSON từ collector, chia nhỏ văn bản (chunking) và nhúng (embedding) vào cơ sở dữ liệu vector FAISS.
 - `src/retrieval.py`: Xử lý logic tìm kiếm văn bản liên quan (Semantic Search) khi có câu hỏi từ người dùng.
 - `src/rag.py`: Ráp nối giữa việc tìm kiếm ngữ cảnh và gọi LLM, xử lý luồng trả lời (Trả lời bình thường hoặc Báo lỗi nếu không biết).
-- `src/llm.py`: Lớp giao tiếp trực tiếp với OpenAI / OpenRouter API.
+- `src/llm.py`: Lớp giao tiếp trực tiếp với OpenAI / OpenRouter API (để trả lời) và SentenceTransformer cục bộ (để nhúng vector).
 - `src/prompts.py`: Chứa các System Prompts và định dạng hướng dẫn cho LLM.
 - `src/config.py`: Tải các biến môi trường.
 - `src/utils.py`: Các hàm tiện ích hỗ trợ (như cắt chữ, làm sạch dữ liệu).
