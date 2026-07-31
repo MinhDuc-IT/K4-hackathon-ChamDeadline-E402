@@ -546,14 +546,6 @@ Bot đang classify các nguồn không liên quan thành `affirm` hoặc `deny`,
 
 ### 8.2. Willing users và kế hoạch validation CP5
 
-**Willing users:**
-
-1. **[CẦN ĐIỀN TÊN HỌC VIÊN 1]**
-2. **[CẦN ĐIỀN TÊN HỌC VIÊN 2]**
-3. **[CẦN ĐIỀN TÊN HỌC VIÊN 3]**
-4. **[CẦN ĐIỀN TÊN TA/BTC nếu có]**
-5. **[CẦN ĐIỀN NGƯỜI TEST CHÉO]**
-
 **Task giao cho user:**
 
 > “Hãy dùng `/ask` để tìm một thông tin bạn thực sự cần trong server. Sau đó thử một câu viết tắt, một câu có nguồn mâu thuẫn hoặc một câu bạn nghi là chưa từng được trả lời.”
