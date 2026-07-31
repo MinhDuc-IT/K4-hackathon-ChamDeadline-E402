@@ -3,7 +3,11 @@
 **SPEC → Prototype → Demo.** Đây không phải cuộc thi code — đây là cuộc thi **tư duy sản phẩm AI**.
 
 - Thời lượng: **1,5 ngày** (một ngày build + một buổi demo)
-- Nhóm: **4-5 người** · zone tối đa 5 nhóm · thi theo lớp
+- Nhóm: **ChamDeadline-E402 (Zone 2)**
+  - Ngô Văn Kiệt - 2A202601524 (Evidence, survey, impact)
+  - Ngô Huy Hoàn - 2A202601925 (Discord integration và sync dữ liệu)
+  - Nguyễn Minh Đức - 2A202601438 (Retrieval, embedding, conflict handling)
+  - Phạm Văn Vinh - 2A202601988 (Prompt, benchmark và eval)
 
 ## Bắt đầu từ đâu?
 

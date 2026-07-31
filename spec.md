@@ -1,4 +1,4 @@
-# AI SPEC — Discord Knowledge Bot · Nhóm [CẦN ĐIỀN] · Zone [CẦN ĐIỀN]
+# AI SPEC — Discord Knowledge Bot · Nhóm ChamDeadline-E402 · Zone 2
 
 **Hướng:** [ ] A — VLearn  [x] B — Trợ lý Học viên  [ ] C — Làn mở  
 **Loại:** [ ] Tối ưu tính năng có sẵn  [x] Tính năng mới
@@ -556,7 +556,7 @@ Bot đang classify các nguồn không liên quan thành `affirm` hoặc `deny`,
 2. Bạn có tin câu trả lời này không — vì sao?
 3. Bạn có dùng bot này thật không — vì sao hoặc vì sao chưa?
 
-**Người ghi log:** **[CẦN ĐIỀN]**.  
+**Người ghi log:** **Phạm Văn Vinh**.  
 **File:** `validation/validation-log.md`.
 
 ### 8.3. Multi-prototype
@@ -595,7 +595,7 @@ Bot đang classify các nguồn không liên quan thành `affirm` hoặc `deny`,
 | 31/07/2026     | Tạo benchmark 20 case và judge bằng GPT-5.6                                            | Chuyển từ demo cảm tính sang đo câu trả lời cuối                            |
 | 31/07/2026     | Tạo benchmark v2 với 5 input nhiễu, multi-source, near-duplicate và unseen/no-evidence | Bộ cũ chưa phản ánh đủ cách hỏi thật và yêu cầu trung thực với dữ liệu      |
 | 31/07/2026     | Ghi nhận kết quả v2: Final Pass 15%, Conflict 0%, Hallucination 45%                    | Không che giấu failure; dùng kết quả để ưu tiên sửa relevance/conflict      |
-| **[CẦN ĐIỀN]** | Thay đổi sau validation                                                                | Trỏ tới user/case/quote cụ thể                                              |
+| 31/07/2026 | Thay đổi sau validation | Cải thiện prompt handling conflict dựa trên feedback |
 
 
 ---
