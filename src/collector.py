@@ -1,10 +1,17 @@
 import os
 import json
 import discord
+from datetime import timedelta, timezone
 from src import config
 
-# Danh sách các kênh cần được index dữ liệu
-TARGET_CHANNELS = ["hỏi-đáp", "chia-sẻ", "bài-học", "thong-bao", "tai-nguyen"]
+# Danh sách ID các kênh cần được index dữ liệu
+TARGET_CHANNEL_IDS = [
+    1532551992906485760, # thong-bao
+    1532552021436137592, # tai-nguyen
+    1532333267292782674, # hoi-dap
+    1532333376806195310, # chia-se
+    1532333595727888474  # bai-hoc
+]
 
 async def process_text_channel(channel: discord.TextChannel, documents: list):
     print(f"Đang xử lý Kênh Văn bản (Text Channel): {channel.name}")
@@ -14,13 +21,18 @@ async def process_text_channel(channel: discord.TextChannel, documents: list):
             if message.author.bot or not message.content.strip():
                 continue
                 
+            # Chuyển đổi múi giờ sang Việt Nam (GMT+7)
+            vietnam_tz = timezone(timedelta(hours=7))
+            created_at_vn = message.created_at.astimezone(vietnam_tz).strftime("%H:%M ngày %d/%m/%Y")
+            
             documents.append({
                 "text": message.content,
                 "channel": channel.name,
                 "thread": "",
                 "url": message.jump_url,
-                "author": str(message.author),
-                "message_id": str(message.id)
+                "author": str(message.author.display_name if hasattr(message.author, 'display_name') else message.author),
+                "message_id": str(message.id),
+                "created_at": created_at_vn
             })
     except Exception as e:
         print(f"Lỗi khi đọc kênh {channel.name}: {e}")
@@ -33,18 +45,41 @@ async def process_forum_channel(channel: discord.ForumChannel, documents: list):
             threads.append(thread)
             
         for thread in threads:
-            async for message in thread.history(limit=100):
+            thread_messages = []
+            first_message_url = ""
+            first_message_author = ""
+            
+            # oldest_first=True để lấy tin nhắn theo thứ tự thời gian (từ cũ đến mới)
+            async for message in thread.history(limit=100, oldest_first=True):
                 if message.author.bot or not message.content.strip():
                     continue
                     
-                documents.append({
-                    "text": message.content,
-                    "channel": channel.name,
-                    "thread": thread.name,
-                    "url": message.jump_url,
-                    "author": str(message.author),
-                    "message_id": str(message.id)
-                })
+                if not first_message_url:
+                    first_message_url = message.jump_url
+                    first_message_author = str(message.author.display_name if hasattr(message.author, 'display_name') else message.author)
+                    
+                # Chuyển đổi múi giờ sang Việt Nam (GMT+7)
+                vietnam_tz = timezone(timedelta(hours=7))
+                created_at_vn = message.created_at.astimezone(vietnam_tz).strftime("%H:%M ngày %d/%m/%Y")
+                author_name = str(message.author.display_name if hasattr(message.author, 'display_name') else message.author)
+
+                # Format tin nhắn kèm tác giả và thời gian
+                thread_messages.append(f"{author_name} ({created_at_vn}): {message.content}")
+
+            if not thread_messages:
+                continue
+                
+            combined_text = "\n\n".join(thread_messages)
+            
+            documents.append({
+                "text": combined_text,
+                "channel": channel.name,
+                "thread": thread.name,
+                "url": first_message_url if first_message_url else thread.jump_url,
+                "author": "Nhiều người" if len(thread_messages) > 1 else first_message_author,
+                "message_id": str(thread.id),
+                "created_at": ""  # Thời gian đã được nhúng vào trong text của từng reply
+            })
     except Exception as e:
         print(f"Lỗi khi đọc kênh {channel.name}: {e}")
 
@@ -61,8 +96,8 @@ async def collect_data(client: discord.Client, guild_id: int):
     documents = []
     
     for channel in guild.channels:
-        # Kiểm tra xem tên kênh có chứa một trong các từ khóa mục tiêu không (để bỏ qua Emoji ở đầu)
-        if any(target in channel.name for target in TARGET_CHANNELS):
+        # Kiểm tra xem ID kênh có nằm trong danh sách mục tiêu không
+        if channel.id in TARGET_CHANNEL_IDS:
             if isinstance(channel, discord.TextChannel):
                 await process_text_channel(channel, documents)
             elif isinstance(channel, discord.ForumChannel):

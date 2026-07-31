@@ -65,6 +65,8 @@ async def on_message(message: discord.Message):
         # Xóa chuỗi tag (@BotName) khỏi nội dung tin nhắn để lấy câu hỏi thực tế
         question = message.content.replace(f'<@{bot.user.id}>', '').strip()
         
+        print(f"\n[DEBUG] 📩 Nhận câu hỏi từ {message.author}: {question}")
+        
         if not question:
             await message.reply("Bạn cần hỏi gì đó sau khi tag tôi nhé!")
             return
@@ -88,6 +90,8 @@ async def on_message(message: discord.Message):
 async def ask(interaction: discord.Interaction, question: str):
     # Xác nhận lệnh và hiển thị trạng thái "đang suy nghĩ" (thinking) cho người dùng thấy
     await interaction.response.defer()
+    
+    print(f"\n[DEBUG] 📩 Nhận Slash Command /ask từ {interaction.user}: {question}")
     
     try:
         answer = rag.get_answer(question)
