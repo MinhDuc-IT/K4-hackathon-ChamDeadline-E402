@@ -38,8 +38,8 @@ def get_answer(question: str) -> str:
         
     # Xử lý trường hợp LLM không tìm thấy thông tin
     if "[KHONG_BIET]" in answer or "Câu này hơi ngoài hiểu biết của mình" in answer:
-        clean_answer = "Câu này hơi ngoài hiểu biết của mình, để không trả lời sai thì mình tag AD vào giúp bạn nha!"
-        return clean_answer + " @Admin"
+        clean_answer = "Câu này hơi ngoài hiểu biết của mình, để không trả lời sai thì mình tag MOD vào giúp bạn nha!"
+        return clean_answer + " @MOD"
         
     # Xử lý trường hợp chỉ là câu chào hỏi/giao tiếp thông thường
     if answer.strip().startswith("[GIAO_TIEP]"):

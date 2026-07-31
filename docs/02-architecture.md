@@ -25,7 +25,7 @@ Khi sinh viên sử dụng lệnh `/ask <câu hỏi>`:
    Dựa vào `prompts.py`, LLM sẽ có 3 hướng xử lý:
    - **(A) Giao tiếp thông thường:** Nếu người dùng chào hỏi, cảm ơn -> LLM trả lời kèm cờ `[GIAO_TIEP]`. Code sẽ xóa phần Nguồn trích dẫn đi.
    - **(B) Trả lời câu hỏi:** Nếu ngữ cảnh có thông tin, LLM tổng hợp và trả lời chi tiết. Trích dẫn Nguồn, Kênh, Chủ đề và Link cụ thể.
-   - **(C) Ngoài vùng kiến thức:** Nếu ngữ cảnh hoàn toàn không có thông tin, LLM sẽ trả lời đúng câu xin lỗi mặc định. Code sẽ tự động bắt câu này, xóa nguồn và gắn thẻ tag `@Admin` để gọi TA vào hỗ trợ (tính năng "biết-mình-không-biết").
+   - **(C) Ngoài vùng kiến thức:** Nếu ngữ cảnh hoàn toàn không có thông tin, LLM sẽ trả lời đúng câu xin lỗi mặc định. Code sẽ tự động bắt câu này, xóa nguồn và gắn thẻ tag `@MOD` để gọi TA vào hỗ trợ (tính năng "biết-mình-không-biết").
 
 ## 3. Luồng tự động cập nhật dữ liệu (Auto-Update)
 Thay vì phải dùng tay chạy `collector.py` và `ingest.py` gây gián đoạn bot, hệ thống đã được thiết kế:
