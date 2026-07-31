@@ -1,8 +1,41 @@
 import discord
 import asyncio
+import time
 from discord.ext import commands, tasks
 from discord import app_commands
 from src import config, rag, collector, ingest
+
+# Bộ nhớ hội thoại: lưu lịch sử tin nhắn gần nhất của từng user
+# Cấu trúc: {user_id: {"messages": [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}], "last_time": timestamp}}
+conversation_history = {}
+HISTORY_MAX_MESSAGES = 10  # Tối đa 5 cặp (user + bot) = 10 messages
+HISTORY_EXPIRE_SECONDS = 600  # Xóa lịch sử sau 10 phút không hoạt động
+
+def get_user_history(user_id: int) -> list:
+    """Lấy lịch sử hội thoại của user. Tự động xóa nếu quá hạn."""
+    if user_id not in conversation_history:
+        return []
+    
+    entry = conversation_history[user_id]
+    # Kiểm tra hết hạn
+    if time.time() - entry["last_time"] > HISTORY_EXPIRE_SECONDS:
+        del conversation_history[user_id]
+        return []
+    
+    return entry["messages"]
+
+def save_to_history(user_id: int, role: str, content: str):
+    """Lưu 1 tin nhắn vào lịch sử hội thoại của user."""
+    if user_id not in conversation_history:
+        conversation_history[user_id] = {"messages": [], "last_time": time.time()}
+    
+    entry = conversation_history[user_id]
+    entry["messages"].append({"role": role, "content": content})
+    entry["last_time"] = time.time()
+    
+    # Giữ tối đa HISTORY_MAX_MESSAGES tin nhắn gần nhất
+    if len(entry["messages"]) > HISTORY_MAX_MESSAGES:
+        entry["messages"] = entry["messages"][-HISTORY_MAX_MESSAGES:]
 
 class MyBot(commands.Bot):
     def __init__(self):
@@ -25,7 +58,7 @@ bot = MyBot()
 @tasks.loop(minutes=15)
 async def auto_update_knowledge():
     """
-    Tác vụ chạy ngầm tự động cập nhật dữ liệu mỗi 24 giờ.
+    Tác vụ chạy ngầm tự động cập nhật dữ liệu mỗi 15 phút.
     """
     print("\n--- BẮT ĐẦU TỰ ĐỘNG CẬP NHẬT DỮ LIỆU ---")
     if not config.DISCORD_GUILD_ID:
@@ -72,13 +105,22 @@ async def on_message(message: discord.Message):
             await message.reply("Bạn cần hỏi gì đó sau khi tag tôi nhé!")
             return
 
+        user_id = message.author.id
+        # Lấy lịch sử hội thoại trước đó của user
+        history = get_user_history(user_id)
+        
         # Hiển thị trạng thái "đang gõ..."
         async with message.channel.typing():
             try:
-                # Chạy rag.get_answer trong một luồng riêng để không chặn vòng lặp sự kiện (non-blocking)
-                answer = await asyncio.to_thread(rag.get_answer, question)
+                # Chạy rag.get_answer trong một luồng riêng, truyền kèm lịch sử hội thoại
+                answer = await asyncio.to_thread(rag.get_answer, question, history)
                 if len(answer) > 2000:
                     answer = answer[:1996] + "..."
+                
+                # Lưu cả câu hỏi và câu trả lời vào lịch sử
+                save_to_history(user_id, "user", question)
+                save_to_history(user_id, "assistant", answer)
+                
                 await message.reply(answer)
             except Exception as e:
                 print(f"Lỗi khi xử lý câu hỏi (tag): {e}")
@@ -90,16 +132,29 @@ async def on_message(message: discord.Message):
 @bot.tree.command(name="ask", description="Hỏi bot dựa trên cơ sở tri thức của Discord")
 @app_commands.describe(question="Câu hỏi của bạn")
 async def ask(interaction: discord.Interaction, question: str):
-    # Xác nhận lệnh và hiển thị trạng thái "đang suy nghĩ" (thinking) cho người dùng thấy
-    await interaction.response.defer()
-    
+    try:
+        # Xác nhận lệnh và hiển thị trạng thái "đang suy nghĩ" (thinking) cho người dùng thấy
+        await interaction.response.defer(thinking=True)
+    except discord.errors.NotFound:
+        # Lỗi 10062 (Unknown interaction) thường xảy ra khi bot không kịp phản hồi trong 3 giây 
+        # do mạng lag hoặc Discord API quá tải. Khi đó token của interaction đã hết hạn.
+        print(f"\n[DEBUG] ⚠️ Lệnh /ask từ {interaction.user} bị timeout (Discord API trễ). Vui lòng thử lại.")
+        return
+        
     print(f"\n[DEBUG] 📩 Nhận Slash Command /ask từ {interaction.user}: {question}")
     
+    user_id = interaction.user.id
+    history = get_user_history(user_id)
+    
     try:
-        # Chạy rag.get_answer trong một luồng riêng để không chặn vòng lặp sự kiện
-        answer = await asyncio.to_thread(rag.get_answer, question)
+        # Chạy rag.get_answer trong một luồng riêng, truyền kèm lịch sử hội thoại
+        answer = await asyncio.to_thread(rag.get_answer, question, history)
         if len(answer) > 2000:
             answer = answer[:1996] + "..."
+        
+        # Lưu cả câu hỏi và câu trả lời vào lịch sử
+        save_to_history(user_id, "user", question)
+        save_to_history(user_id, "assistant", answer)
             
         await interaction.followup.send(answer)
     except Exception as e:

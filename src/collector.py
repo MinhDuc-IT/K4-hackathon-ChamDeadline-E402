@@ -121,18 +121,48 @@ async def collect_data(client: discord.Client, guild_id: int):
         return
 
     print("Bắt đầu thu thập dữ liệu từ Discord...")
+    
+    # Đọc dữ liệu cũ (nếu có) để so sánh
+    old_documents = []
+    old_message_ids = set()
+    data_path = "data/discord/documents.json"
+    if os.path.exists(data_path):
+        try:
+            with open(data_path, "r", encoding="utf-8") as f:
+                old_documents = json.load(f)
+                old_message_ids = {doc.get("message_id") for doc in old_documents}
+        except Exception:
+            pass
+    
     documents = []
+    channel_stats = {}  # Thống kê theo từng kênh
     
     for channel in guild.channels:
         # Kiểm tra xem ID kênh có nằm trong danh sách mục tiêu không
         if channel.id in TARGET_CHANNEL_IDS:
+            before_count = len(documents)
             if isinstance(channel, discord.TextChannel):
                 await process_text_channel(channel, documents)
             elif isinstance(channel, discord.ForumChannel):
                 await process_forum_channel(channel, documents)
+            channel_stats[channel.name] = len(documents) - before_count
+    
+    # Debug: So sánh dữ liệu cũ và mới
+    new_message_ids = {doc.get("message_id") for doc in documents}
+    added = new_message_ids - old_message_ids    # Tin nhắn mới hoàn toàn
+    removed = old_message_ids - new_message_ids  # Tin nhắn đã bị xóa
+    unchanged = new_message_ids & old_message_ids  # Tin nhắn giữ nguyên
+    
+    print(f"\n[DEBUG] 📊 Thống kê thu thập dữ liệu:")
+    print(f"  - Dữ liệu CŨ: {len(old_documents)} tin nhắn")
+    print(f"  - Dữ liệu MỚI: {len(documents)} tin nhắn")
+    print(f"  - Giữ nguyên: {len(unchanged)} | Thêm mới: {len(added)} | Đã xóa: {len(removed)}")
+    print(f"  - Theo kênh:")
+    for ch_name, count in channel_stats.items():
+        print(f"    • {ch_name}: {count} tin nhắn")
                 
     os.makedirs("data/discord", exist_ok=True)
-    with open("data/discord/documents.json", "w", encoding="utf-8") as f:
+    with open(data_path, "w", encoding="utf-8") as f:
         json.dump(documents, f, ensure_ascii=False, indent=2)
         
     print(f"Thu thập hoàn tất. Đã lưu {len(documents)} tin nhắn.")
