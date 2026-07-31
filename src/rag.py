@@ -17,10 +17,17 @@ def get_answer(question: str) -> str:
     context_chunks = []
     unique_sources = []
     seen_urls = set()
+    seen_texts = set()
     
     # Gom nhóm và loại bỏ các nguồn bị trùng lặp (dựa trên URL)
     for doc in retrieved_docs:
         text = doc.get("text", "")
+        
+        # Bỏ qua nếu nội dung (text) này đã từng xuất hiện (loại bỏ lặp trùng lặp)
+        if text in seen_texts:
+            continue
+        seen_texts.add(text)
+        
         author = doc.get("author", "Unknown")
         created_at = doc.get("created_at", "Unknown time")
         channel = doc.get("channel", "Unknown")

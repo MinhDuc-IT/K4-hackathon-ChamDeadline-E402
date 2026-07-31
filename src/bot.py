@@ -21,7 +21,7 @@ class MyBot(commands.Bot):
 
 bot = MyBot()
 
-@tasks.loop(hours=24)
+@tasks.loop(minutes=15)
 async def auto_update_knowledge():
     """
     Tác vụ chạy ngầm tự động cập nhật dữ liệu mỗi 24 giờ.
