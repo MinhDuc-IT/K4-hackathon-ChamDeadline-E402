@@ -1,60 +1,48 @@
-# Discord Knowledge Bot MVP
+# Discord History Bot MVP
 
-Bot Discord MVP cho hackathon: nhan cau hoi qua lenh `/ask`, truy hoi cac cau tra loi tu dataset Discord, va tra lai cau tra loi kem nguon.
+Bot Discord: sync history + embed local vào cache, `/ask` chỉ search vector đã lưu.
 
-## Tinh nang hien tai
+## Flow
 
-- Bot Discord that voi slash command `/ask`
-- Tu dong sinh `knowledge.json` tu `../discord_dataset_with_ids.json` neu file chua ton tai
-- Truy hoi lexical nhe, khong can vector DB
-- Uu tien nguon co dau hieu `coach` / `ta`
-- Neu co `LLM_API_KEY`, `LLM_BASE_URL`, `LLM_MODEL` thi tom tat bang LLM
-- Neu khong co LLM, bot van tra loi bang extractive fallback
+```text
+Bot start / lệnh /sync
+  → đọc Text + Forum history
+  → embed tin mới
+  → lưu cache/messages.json + cache/embeddings.npy
 
-## Cai dat
-
-```bash
-cd codebase
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-copy .env.example .env
+/ask
+  → chỉ embed câu hỏi
+  → cosine với cache local
+  → LLM / fallback hỏi TA
 ```
 
-## Bien moi truong
-
-Bat buoc:
-
-- `DISCORD_BOT_TOKEN`
-
-Khuyen nghi cho slash command sync nhanh trong server test:
-
-- `DISCORD_GUILD_ID`
-
-Tuy chon cho LLM:
-
-- `LLM_API_KEY`
-- `LLM_BASE_URL`
-- `LLM_MODEL`
-
-## Chay bot
+## Chạy
 
 ```bash
 cd codebase
+.venv\Scripts\activate
 python app.py
 ```
 
-## Chuan bi knowledge base thu cong
+Lần đầu start sẽ sync + embed, có thể hơi lâu. Sau đó `/ask` sẽ nhanh hơn nhiều.
 
-Neu muon tao `knowledge.json` truoc khi chay bot:
+## Conflict handling
 
-```bash
-cd codebase
-python knowledge_builder.py
-```
+Ưu tiên **LLM classify** sau bước retrieve:
 
-## Ghi chu MVP
+- LLM gắn `affirm` / `deny` / `neutral` cho từng nguồn
+- nếu `conflict=true` → liệt kê 2 phía + handoff TA/BTC
+- marker hardcode chỉ dùng khi LLM lỗi hoặc chưa cấu hình
 
-- Dataset hien tai duoc bien doi theo kieu: message dau thread = cau hoi, cac message sau = candidate answers.
-- Day la MVP phuc vu demo hackathon, chua phan loai chat che nguon chinh thuc / nguon da TA xac nhan.
-- De tang do tin cay, buoc tiep theo nen them nhan `official`, `ta_confirmed`, hoac `needs_handoff`.
+Không conflict thì LLM trả lời bình thường, kèm nguồn.
+
+## Biến môi trường
+
+- `DISCORD_BOT_TOKEN`
+- `DISCORD_GUILD_ID`
+- `DISCORD_SEARCH_CHANNEL_IDS`
+- `DISCORD_HISTORY_LIMIT`
+- `EMBEDDING_MODEL`
+- `EMBEDDING_MIN_SCORE`
+- `SYNC_INTERVAL_MINUTES` (mặc định 10)
+- `LLM_API_KEY` / `LLM_BASE_URL` / `LLM_MODEL`

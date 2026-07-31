@@ -14,7 +14,9 @@ def build_knowledge(dataset_path: Path) -> list[dict[str, Any]]:
             continue
 
         question_message = messages[0]
-        question = question_message.get("content", "").strip()
+        thread_title = (thread.get("title") or "").strip()
+        original_question = question_message.get("content", "").strip()
+        question = thread_title or original_question
         if not question:
             continue
 
@@ -27,6 +29,7 @@ def build_knowledge(dataset_path: Path) -> list[dict[str, Any]]:
             items.append(
                 {
                     "question": question,
+                    "original_question": original_question,
                     "answer": answer,
                     "thread_id": thread.get("thread_id"),
                     "thread_title": thread.get("title"),
