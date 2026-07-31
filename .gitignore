@@ -5,3 +5,8 @@ codebase/.venv/
 codebase/cache/
 __pycache__/
 *.pyc
+.idea/
+eval/benchmark_report_*.md
+eval/benchmark_results_*.json
+!eval/benchmark_report_latest.md
+!eval/benchmark_results_latest.json
