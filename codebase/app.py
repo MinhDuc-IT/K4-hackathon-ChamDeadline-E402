@@ -1217,6 +1217,69 @@ def is_question_only_record(item: dict[str, Any]) -> bool:
     )
 
 
+QUESTION_ONLY_GENERIC_TOKENS = {
+    "bi",
+    "buoi",
+    "ca",
+    "can",
+    "chac",
+    "chan",
+    "co",
+    "diem",
+    "duoc",
+    "giup",
+    "hoi",
+    "kiem",
+    "lop",
+    "muon",
+    "nhan",
+    "sai",
+    "thieu",
+    "tin",
+    "tra",
+    "tren",
+    "xem",
+    "xac",
+}
+
+
+QUESTION_ONLY_TOPIC_RULES: tuple[tuple[tuple[str, ...], tuple[str, ...]], ...] = (
+    (
+        ("diem danh", "du lieu diem danh"),
+        ("diem danh", "myvinuni", "student is not enrolled", "not enrolled"),
+    ),
+    (
+        ("myvinuni", "student is not enrolled", "not enrolled"),
+        ("myvinuni", "student is not enrolled", "not enrolled", "vinuni"),
+    ),
+    (
+        ("nghi hoc", "vang hoc", "vang mat", "tru diem"),
+        ("nghi hoc", "vang hoc", "vang mat", "tru diem"),
+    ),
+)
+
+
+def question_only_matches_current_question(question: str, item: dict[str, Any]) -> bool:
+    if not is_question_only_record(item):
+        return False
+
+    q = normalize_vi_text(question)
+    doc = normalize_vi_text(document_text(item))
+    for query_terms, source_terms in QUESTION_ONLY_TOPIC_RULES:
+        if has_any(q, query_terms):
+            return has_any(doc, source_terms)
+
+    question_terms = set(lexical_tokens(question)) - QUESTION_ONLY_GENERIC_TOKENS
+    if not question_terms:
+        return False
+
+    source_terms = set(lexical_tokens(document_text(item))) - QUESTION_ONLY_GENERIC_TOKENS
+    overlap = question_terms & source_terms
+    if len(question_terms) <= 2:
+        return bool(overlap) and overlap == question_terms
+    return len(overlap) >= 2
+
+
 def asks_for_steps(question: str) -> bool:
     q = normalize_vi_text(question)
     return has_any(q, ("huong dan", "tung buoc", "cac buoc", "cach", "lam sao"))
@@ -1340,7 +1403,11 @@ def build_corrected_conflict_reply(
 
 def source_is_relevant(question: str, item: dict[str, Any]) -> bool:
     score = lexical_score(question, item)
-    if is_question_only_record(item) and score >= 0.2:
+    if (
+        is_question_only_record(item)
+        and question_only_matches_current_question(question, item)
+        and score >= 0.2
+    ):
         return True
     if asks_for_steps(question) and is_partial_title_record(item) and score >= 0.12:
         return True
@@ -1370,7 +1437,11 @@ def filter_relevant_candidates(
 
     relevant: list[dict[str, Any]] = []
     for item, score in scored:
-        if is_question_only_record(item) and score >= 0.2:
+        if (
+            is_question_only_record(item)
+            and question_only_matches_current_question(question, item)
+            and score >= 0.2
+        ):
             relevant.append(item)
             continue
         if asks_for_steps(question) and is_partial_title_record(item) and score >= 0.12:
@@ -1448,7 +1519,11 @@ def build_data_gap_answer(
 
     top = candidates[0]
     top_score = lexical_score(question, top)
-    if is_question_only_record(top) and top_score >= 0.45:
+    if (
+        is_question_only_record(top)
+        and question_only_matches_current_question(question, top)
+        and top_score >= 0.45
+    ):
         return build_question_only_abstention(question, [top])
 
     if asks_for_steps(question):
@@ -1477,7 +1552,12 @@ def build_policy_answer_after_retrieval(
     if not candidates:
         return None
 
-    question_only = [item for item in candidates if is_question_only_record(item)]
+    question_only = [
+        item
+        for item in candidates
+        if is_question_only_record(item)
+        and question_only_matches_current_question(question, item)
+    ]
     if question_only and len(question_only) == len(candidates):
         return build_question_only_abstention(question, question_only)
 
@@ -1580,6 +1660,55 @@ def clean_llm_answer(question: str, answer: str) -> str:
     answer = remove_unasked_score_details(question, answer)
     answer = remove_source_first_person_asides(answer)
     return answer
+
+
+def answer_abstains_for_insufficient_info(answer: str) -> bool:
+    normalized = normalize_vi_text(answer)
+    return has_any(
+        normalized,
+        (
+            "chua du thong tin",
+            "chua du can cu",
+            "khong du thong tin",
+            "khong co can cu",
+            "khong the xac dinh",
+            "chua the xac dinh",
+            "chua the ket luan",
+            "chua the xac nhan",
+        ),
+    )
+
+
+def should_suppress_sources_for_abstention(
+    question: str,
+    answer: str,
+    candidates: list[dict[str, Any]],
+) -> bool:
+    if not answer_abstains_for_insufficient_info(answer):
+        return False
+
+    normalized = normalize_vi_text(answer)
+    cites_structural_gap = has_any(
+        normalized,
+        (
+            "chi ghi nhan",
+            "hoc vien dat cau hoi",
+            "khong co phan hoi",
+            "chi chua tieu de",
+            "ban ghi chi",
+        ),
+    )
+    if cites_structural_gap and any(
+        (
+            is_question_only_record(item)
+            and question_only_matches_current_question(question, item)
+        )
+        or (asks_for_steps(question) and is_partial_title_record(item))
+        for item in candidates
+    ):
+        return False
+
+    return True
 
 
 def source_detail_lines(item: dict[str, Any]) -> list[str]:
@@ -1720,6 +1849,8 @@ async def answer_question(
                 llm_answer,
             )
             llm_answer = clean_llm_answer(question, llm_answer)
+            if should_suppress_sources_for_abstention(question, llm_answer, candidates):
+                return compose_reply(question, llm_answer)
             llm_answer = augment_answer_with_source_details(question, llm_answer, candidates)
             return compose_reply(question, llm_answer, candidates)
         except Exception as error:
