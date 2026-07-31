@@ -1,3 +1,4 @@
+import re
 from src import retrieval, llm
 
 def get_answer(question: str) -> str:
@@ -31,9 +32,13 @@ def get_answer(question: str) -> str:
         author = doc.get("author", "Unknown")
         created_at = doc.get("created_at", "Unknown time")
         channel = doc.get("channel", "Unknown")
+        is_mod = doc.get("is_mod", False)
+        
+        # Đánh dấu [MOD] vào tên tác giả nếu người đó có Role MOD - LLM sẽ ưu tiên nguồn này
+        author_label = f"[MOD] {author}" if is_mod else author
         
         # Bọc metadata vào chung với text để LLM hiểu rõ bối cảnh
-        formatted_chunk = f"[Tác giả: {author}, Thời gian: {created_at}, Kênh: {channel}]\n{text}"
+        formatted_chunk = f"[Tác giả: {author_label}, Thời gian: {created_at}, Kênh: {channel}]\n{text}"
         context_chunks.append(formatted_chunk)
         
         url = doc.get("url", "")
@@ -64,9 +69,9 @@ def get_answer(question: str) -> str:
         return answer.replace("[GIAO_TIEP]", "").strip()
         
     # Xử lý trường hợp phát hiện mâu thuẫn thông tin
-    if "[MAU_THUAN]" in answer:
+    if re.search(r"\[MAU_THUAN\]", answer, re.IGNORECASE):
         # Xóa tag nhưng KHÔNG return sớm, để code chạy tiếp xuống dưới và ghép thêm khối Nguồn
-        answer = answer.replace("[MAU_THUAN]", "").strip()
+        answer = re.sub(r"\[MAU_THUAN\]\s*", "", answer, flags=re.IGNORECASE).strip()
         
     # Tạo câu trả lời cuối cùng bao gồm nội dung trả lời và danh sách nguồn trích dẫn
     final_answer = f"**Câu trả lời**\n\n{answer}\n\n**Xem chi tiết tại đây**\n\n"

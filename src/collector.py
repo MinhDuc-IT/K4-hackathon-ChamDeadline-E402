@@ -13,6 +13,17 @@ TARGET_CHANNEL_IDS = [
     1532333595727888474  # bai-hoc
 ]
 
+# ID của Role MOD trên Discord server
+MOD_ROLE_ID = 1532584932386537583
+
+def is_mod_member(member: discord.Member) -> bool:
+    """
+    Kiểm tra xem một thành viên có Role MOD hay không.
+    """
+    if not hasattr(member, 'roles'):
+        return False
+    return any(role.id == MOD_ROLE_ID for role in member.roles)
+
 async def process_text_channel(channel: discord.TextChannel, documents: list):
     print(f"Đang xử lý Kênh Văn bản (Text Channel): {channel.name}")
     try:
@@ -20,6 +31,11 @@ async def process_text_channel(channel: discord.TextChannel, documents: list):
         async for message in channel.history(limit=1000):
             if message.author.bot or not message.content.strip():
                 continue
+
+            # Kiểm tra Role MOD của tác giả
+            author_is_mod = False
+            if isinstance(message.author, discord.Member):
+                author_is_mod = is_mod_member(message.author)
                 
             # Chuyển đổi múi giờ sang Việt Nam (GMT+7)
             vietnam_tz = timezone(timedelta(hours=7))
@@ -31,6 +47,7 @@ async def process_text_channel(channel: discord.TextChannel, documents: list):
                 "thread": "",
                 "url": message.jump_url,
                 "author": str(message.author.display_name if hasattr(message.author, 'display_name') else message.author),
+                "is_mod": author_is_mod,
                 "message_id": str(message.id),
                 "created_at": created_at_vn
             })
@@ -48,6 +65,7 @@ async def process_forum_channel(channel: discord.ForumChannel, documents: list):
             thread_messages = []
             first_message_url = ""
             first_message_author = ""
+            first_message_is_mod = False
             
             # oldest_first=True để lấy tin nhắn theo thứ tự thời gian (từ cũ đến mới)
             async for message in thread.history(limit=100, oldest_first=True):
@@ -57,11 +75,17 @@ async def process_forum_channel(channel: discord.ForumChannel, documents: list):
                 if not first_message_url:
                     first_message_url = message.jump_url
                     first_message_author = str(message.author.display_name if hasattr(message.author, 'display_name') else message.author)
+                    if isinstance(message.author, discord.Member):
+                        first_message_is_mod = is_mod_member(message.author)
                     
                 # Chuyển đổi múi giờ sang Việt Nam (GMT+7)
                 vietnam_tz = timezone(timedelta(hours=7))
                 created_at_vn = message.created_at.astimezone(vietnam_tz).strftime("%H:%M ngày %d/%m/%Y")
                 author_name = str(message.author.display_name if hasattr(message.author, 'display_name') else message.author)
+
+                # Đánh dấu [MOD] nếu tác giả có Role MOD
+                if isinstance(message.author, discord.Member) and is_mod_member(message.author):
+                    author_name = f"[MOD] {author_name}"
 
                 # Format tin nhắn kèm tác giả và thời gian
                 thread_messages.append(f"{author_name} ({created_at_vn}): {message.content}")
@@ -71,12 +95,16 @@ async def process_forum_channel(channel: discord.ForumChannel, documents: list):
                 
             combined_text = "\n\n".join(thread_messages)
             
+            # Xác định nếu luồng có ít nhất 1 câu trả lời từ MOD
+            has_mod_reply = any("[MOD]" in msg for msg in thread_messages)
+            
             documents.append({
                 "text": combined_text,
                 "channel": channel.name,
                 "thread": thread.name,
                 "url": first_message_url if first_message_url else thread.jump_url,
                 "author": "Nhiều người" if len(thread_messages) > 1 else first_message_author,
+                "is_mod": first_message_is_mod or has_mod_reply,
                 "message_id": str(thread.id),
                 "created_at": ""  # Thời gian đã được nhúng vào trong text của từng reply
             })

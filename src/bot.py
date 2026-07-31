@@ -7,7 +7,8 @@ from src import config, rag, collector, ingest
 class MyBot(commands.Bot):
     def __init__(self):
         intents = discord.Intents.default()
-        intents.message_content = True # Đảm bảo quyền đọc tin nhắn được bật
+        intents.message_content = True  # Quyền đọc nội dung tin nhắn
+        intents.members = True           # Quyền đọc danh sách thành viên và Role (Đảm bảo bật trong Developer Portal)
         super().__init__(command_prefix="!", intents=intents)
 
     async def setup_hook(self):
@@ -74,7 +75,8 @@ async def on_message(message: discord.Message):
         # Hiển thị trạng thái "đang gõ..."
         async with message.channel.typing():
             try:
-                answer = rag.get_answer(question)
+                # Chạy rag.get_answer trong một luồng riêng để không chặn vòng lặp sự kiện (non-blocking)
+                answer = await asyncio.to_thread(rag.get_answer, question)
                 if len(answer) > 2000:
                     answer = answer[:1996] + "..."
                 await message.reply(answer)
@@ -94,7 +96,8 @@ async def ask(interaction: discord.Interaction, question: str):
     print(f"\n[DEBUG] 📩 Nhận Slash Command /ask từ {interaction.user}: {question}")
     
     try:
-        answer = rag.get_answer(question)
+        # Chạy rag.get_answer trong một luồng riêng để không chặn vòng lặp sự kiện
+        answer = await asyncio.to_thread(rag.get_answer, question)
         if len(answer) > 2000:
             answer = answer[:1996] + "..."
             
