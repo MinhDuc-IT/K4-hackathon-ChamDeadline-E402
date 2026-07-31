@@ -3,3 +3,5 @@ python-dotenv>=1.0.1
 openai>=1.44.0
 faiss-cpu>=1.8.0
 numpy>=1.26.0
+sentence-transformers>=3.0.0
+torch>=2.0.0

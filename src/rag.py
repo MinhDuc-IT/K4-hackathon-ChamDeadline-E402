@@ -36,20 +36,17 @@ def get_answer(question: str) -> str:
         print(f"Lỗi khi gọi LLM: {e}")
         return "Đã xảy ra lỗi trong quá trình tạo câu trả lời."
         
-    # Xử lý trường hợp LLM không tìm thấy thông tin (có thể LLM bọc trong dấu ngoặc kép)
-    if "Câu này hơi ngoài hiểu biết của mình" in answer:
-        # Xóa dấu ngoặc kép nếu có
+    # Xử lý trường hợp LLM không tìm thấy thông tin
+    if "[KHONG_BIET]" in answer or "Câu này hơi ngoài hiểu biết của mình" in answer:
         clean_answer = "Câu này hơi ngoài hiểu biết của mình, để không trả lời sai thì mình tag AD vào giúp bạn nha!"
         return clean_answer + " @Admin"
-        # Ở đây bạn có thể thay @Admin bằng ID Role thực sự của Admin (ví dụ: <@&123456789>)
-        return answer.strip() + " @Admin"
         
     # Xử lý trường hợp chỉ là câu chào hỏi/giao tiếp thông thường
     if answer.strip().startswith("[GIAO_TIEP]"):
         return answer.replace("[GIAO_TIEP]", "").strip()
         
     # Tạo câu trả lời cuối cùng bao gồm nội dung trả lời và danh sách nguồn trích dẫn
-    final_answer = f"**Câu trả lời**\n\n{answer}\n\n**Nguồn tham khảo**\n\n"
+    final_answer = f"**Câu trả lời**\n\n{answer}\n\n**Xem chi tiết tại đây**\n\n"
     
     for src in unique_sources:
         final_answer += f"• Kênh: {src['channel']}\n"

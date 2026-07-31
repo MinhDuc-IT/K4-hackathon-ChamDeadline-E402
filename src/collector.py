@@ -4,7 +4,7 @@ import discord
 from src import config
 
 # Danh sách các kênh cần được index dữ liệu
-TARGET_CHANNELS = ["hỏi-đáp", "chia-sẻ", "bài-học"]
+TARGET_CHANNELS = ["hỏi-đáp", "chia-sẻ", "bài-học", "thong-bao", "tai-nguyen"]
 
 async def process_text_channel(channel: discord.TextChannel, documents: list):
     print(f"Đang xử lý Kênh Văn bản (Text Channel): {channel.name}")
