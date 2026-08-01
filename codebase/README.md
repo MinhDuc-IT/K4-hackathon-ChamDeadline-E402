@@ -2,6 +2,21 @@
 
 Bot Discord: sync history + embed local vào cache, `/ask` chỉ search vector đã lưu.
 
+## Cấu trúc
+
+```text
+codebase/
+├── app.py                 # entry mỏng (python app.py)
+├── bot/                   # Discord commands + runtime
+├── config/                # settings + prompts
+├── store/                 # DiscordHistoryStore + cache I/O
+├── retrieval/             # embedding, lexical, ranking, pipeline
+├── reasoning/             # LLM, classify conflict, answer
+├── utils/                 # text helpers
+├── knowledge/             # knowledge.json + builder
+└── benchmark/             # dataset + runner
+```
+
 ## Flow
 
 ```text
@@ -22,9 +37,17 @@ Bot start / lệnh /sync
 cd codebase
 .venv\Scripts\activate
 python app.py
+# hoặc: python -m bot.main
 ```
 
 Lần đầu start sẽ sync + embed, có thể hơi lâu. Sau đó `/ask` sẽ nhanh hơn nhiều.
+
+Benchmark:
+
+```bash
+python run_benchmark.py
+# hoặc: python -m benchmark.run
+```
 
 ## Conflict handling
 
